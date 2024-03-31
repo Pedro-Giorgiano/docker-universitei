@@ -1,8 +1,6 @@
 FROM ubuntu:20.04
 
-# Habilita suporte para arquitetura i386
 RUN dpkg --add-architecture i386
-
 # Atualiza e instala as dependências
 RUN apt-get update -y && \
     apt-get install -y \
@@ -22,6 +20,13 @@ RUN apt-get update -y && \
     lib32z1 \
     libbz2-1.0:i386
 
+ENV DEBIAN_FRONTEND=noninteractive
+RUN apt-get update -y && \
+    apt-get install -y \
+    openjdk-8-jdk-headless
+
+
+ENV JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
 # Cria um diretório para montar no host
 RUN mkdir /sdk_universitei
 
@@ -59,3 +64,15 @@ RUN mkdir -p ~/.config/Google/AndroidStudio2023.2
 RUN echo "idea.system.path=/root/.config/Google/AndroidStudio2023.2" >> ~/.config/Google/AndroidStudio2023.2/idea.properties && \
     echo "idea.config.path=/root/.config/Google/AndroidStudio2023.2" >> ~/.config/Google/AndroidStudio2023.2/idea.properties
 
+# Set up Android SDK 
+RUN mkdir -p /sdk_universitei/Android/sdk \
+    && mkdir -p /sdk_universitei/.android \
+    && touch /sdk_universitei/.android/repositories.cfg \
+    && wget -O /sdk_universitei/sdk-tools.zip https://dl.google.com/android/repository/sdk-tools-linux-4333796.zip \
+    && unzip /sdk_universitei/sdk-tools.zip -d /sdk_universitei/Android/sdk \
+    && rm /sdk_universitei/sdk-tools.zip \
+    && yes | /sdk_universitei/Android/sdk/tools/bin/sdkmanager --licenses \
+    && /sdk_universitei/Android/sdk/tools/bin/sdkmanager "build-tools;29.0.2" "platform-tools" "platforms;android-29" "sources;android-29"
+
+# Coloca o Android SDK
+ENV PATH="$PATH:/sdk_universitei/Android/sdk/platform-tools"

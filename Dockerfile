@@ -76,3 +76,7 @@ RUN mkdir -p /sdk_universitei/Android/sdk \
 
 # Coloca o Android SDK
 ENV PATH="$PATH:/sdk_universitei/Android/sdk/platform-tools"
+
+
+CMD mv /sdk_universitei/* /SDK_universitei
+
